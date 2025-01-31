@@ -1,5 +1,6 @@
 ﻿# Ignore Visual Studio files
 .vs/
+/.vs
 *.user
 *.suo
 *.cache
