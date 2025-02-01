@@ -1,4 +1,5 @@
-﻿using ACME.School.Application.Ports;
+﻿using ACME.School.Application.DTOs;
+using ACME.School.Application.Ports;
 using ACME.School.Domain.Entities;
 
 namespace ACME.School.Application.Services
@@ -17,12 +18,15 @@ namespace ACME.School.Application.Services
 		}
 
 		// Registers a new student and saves them in the repository.
-		public async Task<Student> RegisterStudentAsync(string name, int age)
+		public async Task<Student> RegisterStudentAsync(RegisterStudentRequest request)
 		{
-			var student = new Student(name, age);
+			var student = new Student(
+				request.Name,
+				request.Age
+			);
+
 			await _studentRepository.AddAsync(student);
 			return student;
 		}
-
     }
 }
