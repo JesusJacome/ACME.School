@@ -2,9 +2,9 @@
 {
 	internal class Course
     {
-        private const decimal MinFee = 0m;
+        private const decimal MinFee = 0m; // Ensures registration fees are non-negative.
 
-        public Guid Id { get; } = Guid.NewGuid();
+		public Guid Id { get; } = Guid.NewGuid();
         public required string Name { get; init; }
 
         private decimal _registrationFee;
