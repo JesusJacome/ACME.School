@@ -1,6 +1,5 @@
 ﻿# Ignore Visual Studio files
 .vs/
-/.vs
 *.user
 *.suo
 *.cache
@@ -11,6 +10,8 @@
 # Ignore build output
 bin/
 obj/
+ACME.School.Test/bin/
+ACME.School.Test/obj/
 
 # Ignore NuGet Packages
 *.nupkg
