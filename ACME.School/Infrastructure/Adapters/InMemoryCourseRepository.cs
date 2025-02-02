@@ -1,7 +1,5 @@
 ﻿using ACME.School.Application.Ports;
 using ACME.School.Domain.Entities;
-using System;
-using System.Threading.Tasks;
 
 namespace ACME.School.Infrastructure.Adapters
 {
@@ -19,6 +17,13 @@ namespace ACME.School.Infrastructure.Adapters
 		{
 			var course = _courses.FirstOrDefault(c => c.Id == id);
 			return Task.FromResult(course);
+		}
+
+		// Retrieves courses whose start and end dates fall within the specified date range.
+		public Task<IEnumerable<Course>> GetCoursesByDateRangeAsync(DateTime start, DateTime end)
+		{
+			var result = _courses.Where(c => c.StartDate >= start && c.EndDate <= end);
+			return Task.FromResult(result);
 		}
 	}
 }

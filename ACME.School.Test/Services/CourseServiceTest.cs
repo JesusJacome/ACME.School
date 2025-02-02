@@ -88,5 +88,74 @@ namespace ACME.School.Test.Services
 			// Ensure the repository AddAsync method was never called because the course creation failed.
 			courseRepository.Verify(repo => repo.AddAsync(It.IsAny<Course>()), Times.Never);
 		}
+
+		[Fact]
+		public async Task GetCoursesByDateRangeAsync_WhenCoursesExistWithinRange_ShouldReturnCoursesWithEnrollments()
+		{
+			// Arrange: Create courses and enroll students.
+			var course1 = new Course("Course 1", 0m, new DateTime(2025, 1, 10), new DateTime(2025, 3, 10));
+			var student1 = new Student("Student 1", 20);
+			course1.EnrollStudent(student1);
+
+			var course2 = new Course("Course 2", 0m, new DateTime(2025, 2, 15), new DateTime(2025, 4, 15));
+			var student2 = new Student("Student 2", 22);
+			course2.EnrollStudent(student2);
+
+			// Create a course that falls outside the date range.
+			var course3 = new Course("Course 3", 0m, new DateTime(2025, 5, 1), new DateTime(2025, 6, 1));
+
+			// For the test, assume the repository returns these courses.
+			var courses = new List<Course> { course1, course2, course3 };
+
+			// Define the date range.
+			DateTime rangeStart = new DateTime(2025, 1, 1);
+			DateTime rangeEnd = new DateTime(2025, 4, 30);
+
+			var courseRepository = new Mock<ICourseRepository>();
+			courseRepository
+				.Setup(repo => repo.GetCoursesByDateRangeAsync(rangeStart, rangeEnd))
+				.ReturnsAsync(courses.Where(c => c.StartDate >= rangeStart && c.EndDate <= rangeEnd));
+
+			var courseService = new CourseService(courseRepository.Object);
+
+			// Act
+			var result = await courseService.GetCoursesByDateRangeAsync(rangeStart, rangeEnd);
+
+			// Assert: Only course1 and course2 should be returned.
+			var resultList = result.ToList();
+			Assert.Equal(2, resultList.Count);
+
+			var course1Dto = resultList.FirstOrDefault(c => c.CourseId == course1.Id);
+			Assert.NotNull(course1Dto);
+			Assert.Single(course1Dto.EnrolledStudents);
+			Assert.Equal(student1.Id, course1Dto.EnrolledStudents.First().StudentId);
+
+			var course2Dto = resultList.FirstOrDefault(c => c.CourseId == course2.Id);
+			Assert.NotNull(course2Dto);
+			Assert.Single(course2Dto.EnrolledStudents);
+			Assert.Equal(student2.Id, course2Dto.EnrolledStudents.First().StudentId);
+		}
+
+		[Fact]
+		public async Task GetCoursesByDateRangeAsync_WhenNoCoursesExistWithinRange_ShouldReturnEmptyCollection()
+		{
+			// Arrange
+			DateTime rangeStart = new DateTime(2025, 1, 1);
+			DateTime rangeEnd = new DateTime(2025, 4, 30);
+
+			var courseRepository = new Mock<ICourseRepository>();
+			// Simulate no courses matching the criteria.
+			courseRepository
+				.Setup(repo => repo.GetCoursesByDateRangeAsync(rangeStart, rangeEnd))
+				.ReturnsAsync(new List<Course>());
+
+			var courseService = new CourseService(courseRepository.Object);
+
+			// Act
+			var result = await courseService.GetCoursesByDateRangeAsync(rangeStart, rangeEnd);
+
+			// Assert
+			Assert.Empty(result);
+		}
 	}
 }
