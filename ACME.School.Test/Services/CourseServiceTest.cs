@@ -3,11 +3,6 @@ using ACME.School.Application.Ports;
 using ACME.School.Application.Services;
 using ACME.School.Domain.Entities;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACME.School.Test.Services
 {

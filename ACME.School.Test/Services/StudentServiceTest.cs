@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using ACME.School.Application.DTOs;
+﻿using ACME.School.Application.DTOs;
 using ACME.School.Application.Ports;
 using ACME.School.Application.Services;
 using ACME.School.Domain.Entities;
 using Moq;
-using Xunit;
 
 namespace ACME.School.Test.Services
 {
