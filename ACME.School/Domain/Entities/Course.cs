@@ -1,5 +1,11 @@
 ﻿namespace ACME.School.Domain.Entities
 {
+	/// <summary>
+	/// Represents a course in the ACME School domain.
+	/// A Course contains details such as its name, registration fee, start and end dates,
+	/// and the list of enrolled students. It encapsulates business rules like validating fees,
+	/// dates, and preventing duplicate enrollments.
+	/// </summary>
 	internal class Course
     {
         private const decimal MinFee = 0m; // Ensures registration fees are non-negative.
@@ -24,9 +30,11 @@
 
 		private DateTime _startDate;
 		private DateTime _endDate;
-
 		public DateTime StartDate => _startDate;
 		public DateTime EndDate => _endDate;
+
+		private readonly List<Student> _enrolledStudents = new List<Student>();
+		public IReadOnlyCollection<Student> EnrolledStudents => _enrolledStudents.AsReadOnly();
 
 		public Course(string name, decimal registrationFee, DateTime startDate, DateTime endDate)
         {
@@ -49,6 +57,20 @@
 
 			_startDate = newStartDate;
 			_endDate = newEndDate;
+		}
+
+		/// <summary>
+		/// Enrolls a student into the course.
+		/// Throws an InvalidOperationException if the student is already enrolled.
+		/// </summary>
+		public void EnrollStudent(Student student)
+		{
+			// Prevent double enrollment
+			if (_enrolledStudents.Any(s => s.Id == student.Id))
+			{
+				throw new InvalidOperationException("Student is already enrolled in this course.");
+			}
+			_enrolledStudents.Add(student);
 		}
 	}
 }
