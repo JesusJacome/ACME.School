@@ -5,8 +5,8 @@ using ACME.School.Domain.Entities;
 namespace ACME.School.Application.Services
 {
 	/// <summary>
-	/// Handles business logic for student-related operations.
-	/// Uses `IStudentRepository` for persistence.
+	/// Provides operations related to student management,
+	/// including the registration of new students.
 	/// </summary>
 	internal class StudentService
 	{
@@ -17,7 +17,7 @@ namespace ACME.School.Application.Services
 			_studentRepository = studentRepository;
 		}
 
-		// Registers a new student and saves them in the repository.
+		// Registers a new student and saves them in the repository (currently in-memory storage).
 		public async Task<Student> RegisterStudentAsync(RegisterStudentRequest request)
 		{
 			var student = new Student(

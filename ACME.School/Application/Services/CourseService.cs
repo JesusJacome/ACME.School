@@ -1,14 +1,13 @@
 ﻿using ACME.School.Application.DTOs;
 using ACME.School.Application.Ports;
 using ACME.School.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACME.School.Application.Services
 {
+	/// <summary>
+	/// Provides operations related to course management,
+	/// including the registration of new courses.
+	/// </summary>
 	internal class CourseService
 	{
 		private readonly ICourseRepository _courseRepository;
@@ -17,6 +16,9 @@ namespace ACME.School.Application.Services
 			_courseRepository = courseRepository;
 		}
 
+		/// <summary>
+		/// Registers a new course using the specified request data.
+		/// </summary>
 		public async Task<Course> RegisterCourseAsync(RegisterCourseRequest request)
 		{
 			var course = new Course(
