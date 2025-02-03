@@ -2,6 +2,7 @@
 using ACME.School.Application.Ports;
 using ACME.School.Domain.Entities;
 using ACME.School.Domain.Events;
+using Serilog;
 
 namespace ACME.School.Application.Services
 {
@@ -23,17 +24,29 @@ namespace ACME.School.Application.Services
 		// Registers a new student and saves them in the repository (currently in-memory storage).
 		public async Task<Student> RegisterStudentAsync(RegisterStudentRequest request)
 		{
-			var student = new Student(
+			// Captures any exceptions that occur during student creationg and registration. 
+			try
+			{
+				var student = new Student(
 				request.Name,
 				request.Age
-			);
+				);
 
-			await _studentRepository.AddAsync(student);
+				await _studentRepository.AddAsync(student);
 
-			// Publish a domain event after the student is registered.
-			await _eventPublisher.PublishAsync(new StudentRegisteredEvent(student));
+				// Publish a domain event after the student is registered.
+				await _eventPublisher.PublishAsync(new StudentRegisteredEvent(student));
 
-			return student;
+				return student;
+			}
+
+			catch (Exception ex)
+			{
+				// Log the exception and rethrow it
+				Log.Error(ex, "An error occurred while registering the student: {StudentName}", request.Name);
+				throw;
+			}
+			
 		}
     }
 }

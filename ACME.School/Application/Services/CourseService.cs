@@ -2,6 +2,7 @@
 using ACME.School.Application.Ports;
 using ACME.School.Domain.Entities;
 using ACME.School.Domain.Events;
+using Serilog;
 
 namespace ACME.School.Application.Services
 {
@@ -25,19 +26,29 @@ namespace ACME.School.Application.Services
 		/// </summary>
 		public async Task<Course> RegisterCourseAsync(RegisterCourseRequest request)
 		{
-			var course = new Course(
+			// Captures any exceptions that occur during course creationg and registration. 
+			try
+			{
+				var course = new Course(
 				request.Name,
 				request.RegistrationFee,
 				request.StartDate,
 				request.EndDate
-			);
+				);
 
-			await _courseRepository.AddAsync(course);
+				await _courseRepository.AddAsync(course);
 
-			// Publish a domain event after the course is registered.
-			await _eventPublisher.PublishAsync(new CourseRegisteredEvent(course));
+				// Publish a domain event after the course is registered.
+				await _eventPublisher.PublishAsync(new CourseRegisteredEvent(course));
 
-			return course;
+				return course;
+			}
+			catch (Exception ex)
+			{
+				// Log the exception and rethrow it
+				Log.Error(ex, "An error occurred while registering the course: {CourseName}", request.Name);
+				throw;
+			}
 		}
 
 		/// <summary>
