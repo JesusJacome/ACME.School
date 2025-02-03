@@ -2,10 +2,12 @@
 using ACME.School.Application.Ports;
 using ACME.School.Application.Services;
 using ACME.School.Domain.Entities;
+using ACME.School.Infrastructure.Adapters;
 using Moq;
 
 namespace ACME.School.Test.Services
 {
+	[Collection("Serilog collection")]
 	public class StudentServiceTest
 	{
 		[Fact]
@@ -17,7 +19,10 @@ namespace ACME.School.Test.Services
 				.Setup(repo => repo.AddAsync(It.IsAny<Student>()))
 				.Returns(Task.CompletedTask);
 
-			var studentService = new StudentService(studentRepository.Object);
+			// Use our SeriLog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
+			var studentService = new StudentService(studentRepository.Object, eventPublisher);
 
 			// Create DTO with the necessary data.
 			var request = new RegisterStudentRequest("Jesus Jacome", 25);
@@ -40,8 +45,12 @@ namespace ACME.School.Test.Services
 		{
 			// Arrange
 			var studentRepository = new Mock<IStudentRepository>();
+
+			// Use our SeriLog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
 			// No need to setup AddAsync since we expect the creation to fail
-			var studentService = new StudentService(studentRepository.Object);
+			var studentService = new StudentService(studentRepository.Object, eventPublisher);
 
 			// Create DTO with an underage value.
 			var request = new RegisterStudentRequest("Jesus Jacome", 17);
