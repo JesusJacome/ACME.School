@@ -24,15 +24,15 @@ namespace ACME.School.Test.Services
 		public async Task RegisterStudentAsync_ShouldAddStudent()
 		{
 			// Arrange
-			var studentRepository = new Mock<IStudentRepository>();
-			studentRepository
+			var studentRepoMock = new Mock<IStudentRepository>();
+			studentRepoMock
 				.Setup(repo => repo.AddAsync(It.IsAny<Student>()))
 				.Returns(Task.CompletedTask);
 
 			// Use our SeriLog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 
-			var studentService = new StudentService(studentRepository.Object, eventPublisher);
+			var studentService = new StudentService(studentRepoMock.Object, eventPublisher);
 
 			// Create DTO with the necessary data.
 			var request = new RegisterStudentRequest("Jesus Jacome", 25);
@@ -47,20 +47,20 @@ namespace ACME.School.Test.Services
 			Assert.NotEqual(Guid.Empty, student.Id);
 
 			// Ensure repository was called
-			studentRepository.Verify(repo => repo.AddAsync(It.IsAny<Student>()), Times.Once);
+			studentRepoMock.Verify(repo => repo.AddAsync(It.IsAny<Student>()), Times.Once);
 		}
 
 		[Fact]
 		public async Task RegisterStudentAsync_WhenUnderage_ThrowsException()
 		{
 			// Arrange
-			var studentRepository = new Mock<IStudentRepository>();
+			var studentRepoMock = new Mock<IStudentRepository>();
 
 			// Use our SeriLog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 
 			// No need to setup AddAsync since we expect the creation to fail
-			var studentService = new StudentService(studentRepository.Object, eventPublisher);
+			var studentService = new StudentService(studentRepoMock.Object, eventPublisher);
 
 			// Create DTO with an underage value.
 			var request = new RegisterStudentRequest("Jesus Jacome", 17);
@@ -69,7 +69,7 @@ namespace ACME.School.Test.Services
 			await Assert.ThrowsAsync<ArgumentException>(() => studentService.RegisterStudentAsync(request));
 
 			// Ensure repository was NOT called (since registration failed)
-			studentRepository.Verify(repo => repo.AddAsync(It.IsAny<Student>()), Times.Never);
+			studentRepoMock.Verify(repo => repo.AddAsync(It.IsAny<Student>()), Times.Never);
 		}
 	}
 }

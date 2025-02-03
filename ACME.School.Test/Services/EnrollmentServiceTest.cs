@@ -58,18 +58,18 @@ namespace ACME.School.Test.Services
 			// Create a course with a registration fee.
 			var course = new Course("Paid Course", 100m, DateTime.Today.AddDays(1), DateTime.Today.AddDays(30));
 
-			var studentRepository = new Mock<IStudentRepository>();
-			studentRepository
+			var studentRepoMock = new Mock<IStudentRepository>();
+			studentRepoMock
 				.Setup(repo => repo.GetByIdAsync(student.Id))
 				.ReturnsAsync(student);
 
-			var courseRepository = new Mock<ICourseRepository>();
-			courseRepository
+			var courseRepoMock = new Mock<ICourseRepository>();
+			courseRepoMock
 				.Setup(repo => repo.GetByIdAsync(course.Id))
 				.ReturnsAsync(course);
 
-			var paymentGateway = new Mock<IPaymentGateway>();
-			paymentGateway
+			var paymentGatewayMock = new Mock<IPaymentGateway>();
+			paymentGatewayMock
 				.Setup(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee))
 				.ReturnsAsync(true);
 
@@ -77,9 +77,9 @@ namespace ACME.School.Test.Services
 			var eventPublisher = new LoggingEventPublisher();
 
 			var enrollmentService = new EnrollmentService(
-				courseRepository.Object,
-				studentRepository.Object,
-				paymentGateway.Object,
+				courseRepoMock.Object,
+				studentRepoMock.Object,
+				paymentGatewayMock.Object,
 				eventPublisher
 			);
 
@@ -89,7 +89,7 @@ namespace ACME.School.Test.Services
 			// Assert
 			Assert.Contains(student, course.EnrolledStudents);
 			// Ensure paymentGateway was called
-			paymentGateway.Verify(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee), Times.Once);
+			paymentGatewayMock.Verify(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee), Times.Once);
 		}
 
 		[Fact]
@@ -99,18 +99,18 @@ namespace ACME.School.Test.Services
 			var student = new Student("Jesus Jacome", 24);
 			var course = new Course("Paid Course", 150m, DateTime.Today.AddDays(1), DateTime.Today.AddDays(30));
 
-			var studentRepository = new Mock<IStudentRepository>();
-			studentRepository
+			var studentRepoMock = new Mock<IStudentRepository>();
+			studentRepoMock
 				.Setup(repo => repo.GetByIdAsync(student.Id))
 				.ReturnsAsync(student);
 
-			var courseRepository = new Mock<ICourseRepository>();
-			courseRepository
+			var courseRepoMock = new Mock<ICourseRepository>();
+			courseRepoMock
 				.Setup(repo => repo.GetByIdAsync(course.Id))
 				.ReturnsAsync(course);
 
-			var paymentGateway = new Mock<IPaymentGateway>();
-			paymentGateway
+			var paymentGatewayMock = new Mock<IPaymentGateway>();
+			paymentGatewayMock
 				.Setup(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee))
 				.ReturnsAsync(false);
 
@@ -118,9 +118,9 @@ namespace ACME.School.Test.Services
 			var eventPublisher = new LoggingEventPublisher();
 
 			var enrollmentService = new EnrollmentService(
-				courseRepository.Object,
-				studentRepository.Object,
-				paymentGateway.Object,
+				courseRepoMock.Object,
+				studentRepoMock.Object,
+				paymentGatewayMock.Object,
 				eventPublisher
 			);
 
@@ -128,7 +128,7 @@ namespace ACME.School.Test.Services
 			await Assert.ThrowsAsync<InvalidOperationException>(() => enrollmentService.EnrollStudentAsync(student.Id, course.Id));
 			// Verify that the student was not enrolled.
 			Assert.DoesNotContain(student, course.EnrolledStudents);
-			paymentGateway.Verify(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee), Times.Once);
+			paymentGatewayMock.Verify(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee), Times.Once);
 		}
 
 		[Fact]
@@ -137,26 +137,26 @@ namespace ACME.School.Test.Services
 			// Arrange
 			var course = new Course("Course", 50m, DateTime.Today.AddDays(1), DateTime.Today.AddDays(30));
 
-			var studentRepository = new Mock<IStudentRepository>();
+			var studentRepoMock = new Mock<IStudentRepository>();
 			// Simulate student not found.
-			studentRepository
+			studentRepoMock
 				.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
 				.ReturnsAsync((Student)null);
 
-			var courseRepository = new Mock<ICourseRepository>();
-			courseRepository
+			var courseRepoMock = new Mock<ICourseRepository>();
+			courseRepoMock
 				.Setup(repo => repo.GetByIdAsync(course.Id))
 				.ReturnsAsync(course);
 
-			var paymentGateway = new Mock<IPaymentGateway>();
+			var paymentGatewayMock = new Mock<IPaymentGateway>();
 
 			// Use our Serilog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 
 			var enrollmentService = new EnrollmentService(
-				courseRepository.Object,
-				studentRepository.Object,
-				paymentGateway.Object,
+				courseRepoMock.Object,
+				studentRepoMock.Object,
+				paymentGatewayMock.Object,
 				eventPublisher
 			);
 
@@ -170,26 +170,26 @@ namespace ACME.School.Test.Services
 			// Arrange
 			var student = new Student("Jesus Jacome", 27);
 
-			var studentRepository = new Mock<IStudentRepository>();
-			studentRepository
+			var studentRepoMock = new Mock<IStudentRepository>();
+			studentRepoMock
 				.Setup(repo => repo.GetByIdAsync(student.Id))
 				.ReturnsAsync(student);
 
-			var courseRepository = new Mock<ICourseRepository>();
+			var courseRepoMock = new Mock<ICourseRepository>();
 			// Simulate course not found.
-			courseRepository
+			courseRepoMock
 				.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
 				.ReturnsAsync((Course)null);
 
-			var paymentGateway = new Mock<IPaymentGateway>();
+			var paymentGatewayMock = new Mock<IPaymentGateway>();
 
 			// Use our Serilog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 
 			var enrollmentService = new EnrollmentService(
-				courseRepository.Object,
-				studentRepository.Object,
-				paymentGateway.Object,
+				courseRepoMock.Object,
+				studentRepoMock.Object,
+				paymentGatewayMock.Object,
 				eventPublisher
 			);
 
@@ -206,23 +206,23 @@ namespace ACME.School.Test.Services
 			// Pre-enroll the student.
 			course.EnrollStudent(student);
 
-			var studentRepository = new Mock<IStudentRepository>();
-			studentRepository.Setup(repo => repo.GetByIdAsync(student.Id))
+			var studentRepoMock = new Mock<IStudentRepository>();
+			studentRepoMock.Setup(repo => repo.GetByIdAsync(student.Id))
 				.ReturnsAsync(student);
 
-			var courseRepository = new Mock<ICourseRepository>();
-			courseRepository.Setup(repo => repo.GetByIdAsync(course.Id))
+			var courseRepoMock = new Mock<ICourseRepository>();
+			courseRepoMock.Setup(repo => repo.GetByIdAsync(course.Id))
 				.ReturnsAsync(course);
 
-			var paymentGateway = new Mock<IPaymentGateway>();
+			var paymentGatewayMock = new Mock<IPaymentGateway>();
 
 			// Use our Serilog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 
 			var enrollmentService = new EnrollmentService(
-				courseRepository.Object,
-				studentRepository.Object,
-				paymentGateway.Object,
+				courseRepoMock.Object,
+				studentRepoMock.Object,
+				paymentGatewayMock.Object,
 				eventPublisher
 			);
 

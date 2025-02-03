@@ -26,15 +26,15 @@ namespace ACME.School.Test.Services
 		public async Task RegisterCourseAsync_ShouldAddCourse(decimal fee, string courseName)
 		{
 			// Arrange
-			var courseRepository = new Mock<ICourseRepository>();
-			courseRepository
+			var courseRepoMock = new Mock<ICourseRepository>();
+			courseRepoMock
 				.Setup(r => r.AddAsync(It.IsAny<Course>()))
 				.Returns(Task.CompletedTask);
 
 			// Use our Serilog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 
-			var courseService = new CourseService(courseRepository.Object, eventPublisher);
+			var courseService = new CourseService(courseRepoMock.Object, eventPublisher);
 
 			// Use fixed dates for deterministic testing.
 			var startDate = new DateTime(2025, 1, 1);
@@ -55,19 +55,19 @@ namespace ACME.School.Test.Services
 			Assert.NotEqual(Guid.Empty, course.Id);
 
 			// Ensure repository was called
-			courseRepository.Verify(repo => repo.AddAsync(It.IsAny<Course>()), Times.Once);
+			courseRepoMock.Verify(repo => repo.AddAsync(It.IsAny<Course>()), Times.Once);
 		}
 
 		[Fact]
 		public async Task RegisterCourseAsync_WhenFeeIsNegative_ThrowsException()
 		{
 			// Arrange
-			var courseRepository = new Mock<ICourseRepository>();
+			var courseRepoMock = new Mock<ICourseRepository>();
 
 			// Use our Serilog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 			// No need to setup AddAsync since we expect the creation to fail
-			var courseService = new CourseService(courseRepository.Object, eventPublisher);
+			var courseService = new CourseService(courseRepoMock.Object, eventPublisher);
 
 			// Use fixed dates for deterministic testing.
 			var startDate = new DateTime(2025, 1, 1);
@@ -80,19 +80,19 @@ namespace ACME.School.Test.Services
 			await Assert.ThrowsAsync<ArgumentException>(() => courseService.RegisterCourseAsync(request));
 
 			// Ensure repository was never called, because creation failed.
-			courseRepository.Verify(repo => repo.AddAsync(It.IsAny<Course>()), Times.Never);
+			courseRepoMock.Verify(repo => repo.AddAsync(It.IsAny<Course>()), Times.Never);
 		}
 
 		[Fact]
 		public async Task RegisterCourseAsync_WhenDatesAreInvalid_ThrowsException()
 		{
 			// Arrange
-			var courseRepository = new Mock<ICourseRepository>();
+			var courseRepoMock = new Mock<ICourseRepository>();
 
 			// Use our Serilog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 			// No need to setup AddAsync since we expect the creation to fail
-			var courseService = new CourseService(courseRepository.Object, eventPublisher);
+			var courseService = new CourseService(courseRepoMock.Object, eventPublisher);
 
 			// Use fixed dates such that the end date is not after the start date.
 			var startDate = new DateTime(2025, 1, 1);
@@ -105,7 +105,7 @@ namespace ACME.School.Test.Services
 			await Assert.ThrowsAsync<ArgumentException>(() => courseService.RegisterCourseAsync(request));
 
 			// Ensure the repository AddAsync method was never called because the course creation failed.
-			courseRepository.Verify(repo => repo.AddAsync(It.IsAny<Course>()), Times.Never);
+			courseRepoMock.Verify(repo => repo.AddAsync(It.IsAny<Course>()), Times.Never);
 		}
 
 		[Fact]
@@ -130,14 +130,14 @@ namespace ACME.School.Test.Services
 			DateTime rangeStart = new DateTime(2025, 1, 1);
 			DateTime rangeEnd = new DateTime(2025, 4, 30);
 
-			var courseRepository = new Mock<ICourseRepository>();
-			courseRepository
+			var courseRepoMock = new Mock<ICourseRepository>();
+			courseRepoMock
 				.Setup(repo => repo.GetCoursesByDateRangeAsync(rangeStart, rangeEnd))
 				.ReturnsAsync(courses.Where(c => c.StartDate >= rangeStart && c.EndDate <= rangeEnd));
 
 			var eventPublisher = new LoggingEventPublisher();
 
-			var courseService = new CourseService(courseRepository.Object, eventPublisher);
+			var courseService = new CourseService(courseRepoMock.Object, eventPublisher);
 
 			// Act
 			var result = await courseService.GetCoursesByDateRangeAsync(rangeStart, rangeEnd);
@@ -164,16 +164,16 @@ namespace ACME.School.Test.Services
 			DateTime rangeStart = new DateTime(2025, 1, 1);
 			DateTime rangeEnd = new DateTime(2025, 4, 30);
 
-			var courseRepository = new Mock<ICourseRepository>();
+			var courseRepoMock = new Mock<ICourseRepository>();
 			// Simulate no courses matching the criteria.
-			courseRepository
+			courseRepoMock
 				.Setup(repo => repo.GetCoursesByDateRangeAsync(rangeStart, rangeEnd))
 				.ReturnsAsync(new List<Course>());
 
 			// Use our Serilog-based event publisher
 			var eventPublisher = new LoggingEventPublisher();
 
-			var courseService = new CourseService(courseRepository.Object, eventPublisher);
+			var courseService = new CourseService(courseRepoMock.Object, eventPublisher);
 
 			// Act
 			var result = await courseService.GetCoursesByDateRangeAsync(rangeStart, rangeEnd);
