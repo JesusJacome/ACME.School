@@ -6,6 +6,15 @@ using ACME.School.Infrastructure.Adapters;
 using Moq;
 
 // TODO: Extend tests to verify that domain events are published correctly.
+
+/// <summary>
+/// Service Tests for Student (and related domain entity creation).
+/// 
+/// Note:
+/// These tests validate both the service layer behavior and the underlying domain entity creation logic.
+/// For example, when registering a student, the service will call into the domain logic via constructor
+/// to enforce business rules (such as only allowing adults to register).
+/// </summary>
 namespace ACME.School.Test.Services
 {
 	[Collection("Serilog collection")]

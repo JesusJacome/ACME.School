@@ -3,10 +3,9 @@ using ACME.School.Domain.Entities;
 
 namespace ACME.School.Infrastructure.Adapters
 {
-	/// <summary>
-	/// Simple in-memory implementation of `ICourseRepository`.
-	/// Used for testing or non-persistent storage.
-	/// </summary>
+	/// In-memory repository simulating asynchronous operations.
+	/// Although data is stored in memory now, asynchronous signatures are used to
+	/// prepare the system for future integration with a persistent data store.
 	internal class InMemoryCourseRepository : ICourseRepository
 	{
 		private readonly List<Course> _courses = new();
