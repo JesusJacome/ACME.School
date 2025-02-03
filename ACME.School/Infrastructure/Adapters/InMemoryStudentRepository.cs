@@ -1,10 +1,5 @@
 ﻿using ACME.School.Application.Ports;
 using ACME.School.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ACME.School.Infrastructure.Adapters
 {

@@ -5,6 +5,7 @@ using ACME.School.Domain.Entities;
 using ACME.School.Infrastructure.Adapters;
 using Moq;
 
+// TODO: Extend tests to verify that domain events are published correctly.
 namespace ACME.School.Test.Services
 {
 	[Collection("Serilog collection")]

@@ -3,6 +3,10 @@ using ACME.School.Domain.Entities;
 
 namespace ACME.School.Infrastructure.Adapters
 {
+	/// <summary>
+	/// Simple in-memory implementation of `ICourseRepository`.
+	/// Used for testing or non-persistent storage.
+	/// </summary>
 	internal class InMemoryCourseRepository : ICourseRepository
 	{
 		private readonly List<Course> _courses = new();
