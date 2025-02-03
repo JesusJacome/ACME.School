@@ -1,10 +1,13 @@
 ﻿using ACME.School.Application.Ports;
 using ACME.School.Application.Services;
 using ACME.School.Domain.Entities;
+using ACME.School.Infrastructure.Adapters;
 using Moq;
 
+//TODO: Extend tests to verify that domain events are published correctly.
 namespace ACME.School.Test.Services
 {
+	[Collection("Serilog collection")]
 	public class EnrollmentServiceTest
 	{
 		[Fact]
@@ -27,10 +30,14 @@ namespace ACME.School.Test.Services
 
 			var paymentGatewayMock = new Mock<IPaymentGateway>();
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
 			var enrollmentService = new EnrollmentService(
 				courseRepoMock.Object,
 				studentRepoMock.Object,
-				paymentGatewayMock.Object
+				paymentGatewayMock.Object,
+				eventPublisher
 			);
 
 			// Act
@@ -66,10 +73,15 @@ namespace ACME.School.Test.Services
 				.Setup(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee))
 				.ReturnsAsync(true);
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
 			var enrollmentService = new EnrollmentService(
 				courseRepository.Object,
 				studentRepository.Object,
-				paymentGateway.Object);
+				paymentGateway.Object,
+				eventPublisher
+			);
 
 			// Act
 			await enrollmentService.EnrollStudentAsync(student.Id, course.Id);
@@ -102,10 +114,14 @@ namespace ACME.School.Test.Services
 				.Setup(pg => pg.ProcessPaymentAsync(student, course, course.RegistrationFee))
 				.ReturnsAsync(false);
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
 			var enrollmentService = new EnrollmentService(
 				courseRepository.Object,
 				studentRepository.Object,
-				paymentGateway.Object
+				paymentGateway.Object,
+				eventPublisher
 			);
 
 			// Act & Assert
@@ -134,10 +150,14 @@ namespace ACME.School.Test.Services
 
 			var paymentGateway = new Mock<IPaymentGateway>();
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
 			var enrollmentService = new EnrollmentService(
 				courseRepository.Object,
 				studentRepository.Object,
-				paymentGateway.Object
+				paymentGateway.Object,
+				eventPublisher
 			);
 
 			// Act & Assert
@@ -163,10 +183,14 @@ namespace ACME.School.Test.Services
 
 			var paymentGateway = new Mock<IPaymentGateway>();
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
 			var enrollmentService = new EnrollmentService(
 				courseRepository.Object,
 				studentRepository.Object,
-				paymentGateway.Object
+				paymentGateway.Object,
+				eventPublisher
 			);
 
 			// Act & Assert
@@ -192,10 +216,14 @@ namespace ACME.School.Test.Services
 
 			var paymentGateway = new Mock<IPaymentGateway>();
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
 			var enrollmentService = new EnrollmentService(
 				courseRepository.Object,
 				studentRepository.Object,
-				paymentGateway.Object
+				paymentGateway.Object,
+				eventPublisher
 			);
 
 			// Act & Assert: A second enrollment attempt should throw.
