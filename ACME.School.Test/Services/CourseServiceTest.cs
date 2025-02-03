@@ -2,10 +2,12 @@
 using ACME.School.Application.Ports;
 using ACME.School.Application.Services;
 using ACME.School.Domain.Entities;
+using ACME.School.Infrastructure.Adapters;
 using Moq;
 
 namespace ACME.School.Test.Services
 {
+	[Collection("Serilog collection")]
 	public class CourseServiceTest
 	{
 		[Theory]
@@ -19,7 +21,10 @@ namespace ACME.School.Test.Services
 				.Setup(r => r.AddAsync(It.IsAny<Course>()))
 				.Returns(Task.CompletedTask);
 
-			var courseService = new CourseService(courseRepository.Object);
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
+			var courseService = new CourseService(courseRepository.Object, eventPublisher);
 
 			// Use fixed dates for deterministic testing.
 			var startDate = new DateTime(2025, 1, 1);
@@ -49,8 +54,10 @@ namespace ACME.School.Test.Services
 			// Arrange
 			var courseRepository = new Mock<ICourseRepository>();
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
 			// No need to setup AddAsync since we expect the creation to fail
-			var courseService = new CourseService(courseRepository.Object);
+			var courseService = new CourseService(courseRepository.Object, eventPublisher);
 
 			// Use fixed dates for deterministic testing.
 			var startDate = new DateTime(2025, 1, 1);
@@ -72,8 +79,10 @@ namespace ACME.School.Test.Services
 			// Arrange
 			var courseRepository = new Mock<ICourseRepository>();
 
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
 			// No need to setup AddAsync since we expect the creation to fail
-			var courseService = new CourseService(courseRepository.Object);
+			var courseService = new CourseService(courseRepository.Object, eventPublisher);
 
 			// Use fixed dates such that the end date is not after the start date.
 			var startDate = new DateTime(2025, 1, 1);
@@ -116,7 +125,9 @@ namespace ACME.School.Test.Services
 				.Setup(repo => repo.GetCoursesByDateRangeAsync(rangeStart, rangeEnd))
 				.ReturnsAsync(courses.Where(c => c.StartDate >= rangeStart && c.EndDate <= rangeEnd));
 
-			var courseService = new CourseService(courseRepository.Object);
+			var eventPublisher = new LoggingEventPublisher();
+
+			var courseService = new CourseService(courseRepository.Object, eventPublisher);
 
 			// Act
 			var result = await courseService.GetCoursesByDateRangeAsync(rangeStart, rangeEnd);
@@ -149,7 +160,10 @@ namespace ACME.School.Test.Services
 				.Setup(repo => repo.GetCoursesByDateRangeAsync(rangeStart, rangeEnd))
 				.ReturnsAsync(new List<Course>());
 
-			var courseService = new CourseService(courseRepository.Object);
+			// Use our Serilog-based event publisher
+			var eventPublisher = new LoggingEventPublisher();
+
+			var courseService = new CourseService(courseRepository.Object, eventPublisher);
 
 			// Act
 			var result = await courseService.GetCoursesByDateRangeAsync(rangeStart, rangeEnd);

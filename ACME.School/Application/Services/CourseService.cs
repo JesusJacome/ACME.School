@@ -1,6 +1,7 @@
 ﻿using ACME.School.Application.DTOs;
 using ACME.School.Application.Ports;
 using ACME.School.Domain.Entities;
+using ACME.School.Domain.Events;
 
 namespace ACME.School.Application.Services
 {
@@ -11,9 +12,12 @@ namespace ACME.School.Application.Services
 	internal class CourseService
 	{
 		private readonly ICourseRepository _courseRepository;
-		public CourseService(ICourseRepository courseRepository)
+		private readonly IEventPublisher _eventPublisher;
+
+		public CourseService(ICourseRepository courseRepository, IEventPublisher eventPublisher)
 		{
 			_courseRepository = courseRepository;
+			_eventPublisher = eventPublisher;
 		}
 
 		/// <summary>
@@ -29,6 +33,10 @@ namespace ACME.School.Application.Services
 			);
 
 			await _courseRepository.AddAsync(course);
+
+			// Publish a domain event after the course is registered.
+			await _eventPublisher.PublishAsync(new CourseRegisteredEvent(course));
+
 			return course;
 		}
 
