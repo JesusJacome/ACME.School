@@ -5,6 +5,16 @@ using ACME.School.Infrastructure.Adapters;
 using Moq;
 
 //TODO: Extend tests to verify that domain events are published correctly.
+
+/// <summary>
+/// Service Tests for EnrollmentService and the related domain logic.
+/// 
+/// Note:
+/// These tests verify multiple enrollment scenarios (free vs. paid courses),
+/// confirm that exceptions are thrown for invalid operations (e.g., missing
+/// student or duplicate enrollment), and check event publishing via a lightweight
+/// observer pattern for future extensibility.
+/// </summary>
 namespace ACME.School.Test.Services
 {
 	[Collection("Serilog collection")]

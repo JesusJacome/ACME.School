@@ -12,7 +12,7 @@ using Moq;
 /// 
 /// Note:
 /// These tests validate both the service layer behavior and the underlying domain entity creation logic.
-/// For example, when registering a student, the service will call into the domain logic via constructor
+/// For example, when registering a course, the service will call into the domain logic via constructor
 /// to enforce business rules (such as Registration Fee cannot be negative or dates validation).
 /// </summary>
 namespace ACME.School.Test.Services
