@@ -1,6 +1,6 @@
 # ACME.School
 
-ACME.School is a proof-of-concept (PoC) application for managing students and courses at ACME School, built using **Hexagonal Architecture**. This design isolates core business logic from external dependencies and organizes the code into Domain, Application, and Infrastructure layers following **SOLID principles**, with a rich domain model where entities like **Student** and **Course** enforce their own validation rules.
+ACME.School is a proof-of-concept (PoC) application for managing students and courses at ACME School, built using **.NET 8** and **Hexagonal Architecture**. This design isolates core business logic from external dependencies and organizes the code into Domain, Application, and Infrastructure layers following **SOLID principles**, with a rich domain model where entities like **Student** and **Course** enforce their own validation rules.
 
 The solution includes an **xUnit test suite** that validates service and domain logic, with **detailed logging via Serilog** (console and file sinks) during test execution to aid debugging. Additionally, a lightweight **event-driven approach** is used to capture key **domain event**s, paving the way for future enhancements and smoother external integrations.
 
